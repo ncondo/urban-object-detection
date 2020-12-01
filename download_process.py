@@ -24,7 +24,25 @@ def create_tf_example(filename, encoded_jpeg, annotations):
         - tf_example [tf.Train.Example]: tf example in the objection detection api format.
     """
 
-    # TODO: Implement function to convert the data
+    encoded_jpeg_io = io.BytesIO(encoded_jpeg)
+    image = Image.open(encoded_jpeg_io)
+    width, height = image.size
+
+    image_format = b'jpg'
+    xmins = []
+    xmaxs = []
+    ymins = []
+    ymaxs = []
+    classes_text = []
+    classes = []
+
+    for annotation in annotations:
+        xmins.append((annotation.box.center_x - annotation.box.length / 2) / width)
+        xmaxs.append((annotation.box.center_x + annotation.box.length / 2) / width)
+        ymins.append((annotation.box.center_y - annotation.box.width / 2) / height)
+        ymaxs.append((annotation.box.center_y + annotation.box.width / 2) / height)
+        classes_text.append(label_map_dict[annotation.type].encode('utf8'))
+        classes.append(annotation.type)
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': int64_feature(height),
