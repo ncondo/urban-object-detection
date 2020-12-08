@@ -9,6 +9,7 @@ from PIL import Image
 from psutil import cpu_count
 
 from utils import *
+from object_detection.utils import dataset_util, label_map_util
 
 
 def create_tf_example(filename, encoded_jpeg, annotations):
@@ -36,19 +37,23 @@ def create_tf_example(filename, encoded_jpeg, annotations):
     classes_text = []
     classes = []
 
+    label_map = label_map_util.load_labelmap('label_map.pbtxt')
+    label_map_dict = label_map_util.get_label_map_dict(label_map)
+    label_map_dict = dict(map(reversed, label_map_dict.items()))
+
     for annotation in annotations:
-        xmins.append((annotation.box.center_x - annotation.box.length / 2) / width)
-        xmaxs.append((annotation.box.center_x + annotation.box.length / 2) / width)
-        ymins.append((annotation.box.center_y - annotation.box.width / 2) / height)
-        ymaxs.append((annotation.box.center_y + annotation.box.width / 2) / height)
+        xmins.append((annotation.box.center_x - 0.5 * annotation.box.length) / width)
+        xmaxs.append((annotation.box.center_x + 0.5 * annotation.box.length) / width)
+        ymins.append((annotation.box.center_y - 0.5 * annotation.box.width) / height)
+        ymaxs.append((annotation.box.center_y + 0.5 * annotation.box.width) / height)
         classes_text.append(label_map_dict[annotation.type].encode('utf8'))
         classes.append(annotation.type)
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': int64_feature(height),
         'image/width': int64_feature(width),
-        'image/filename': bytes_feature(filename),
-        'image/source_id': bytes_feature(filename),
+        'image/filename': bytes_feature(filename.encode('utf8')),
+        'image/source_id': bytes_feature(filename.encode('utf8')),
         'image/encoded': bytes_feature(encoded_jpeg),
         'image/format': bytes_feature(image_format),
         'image/object/bbox/xmin': float_list_feature(xmins),
