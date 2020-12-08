@@ -20,6 +20,8 @@ RUN pip3 install -r requirements.txt
 RUN pip3 install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
 
 ENV TF_CPP_MIN_LOG_LEVEL=2
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,video,utility
 
 RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip && \
     unzip protoc-3.13.0-linux-x86_64.zip -d /app/protobuf/
