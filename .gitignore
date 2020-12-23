@@ -6,6 +6,7 @@ __pycache__/
 # Large data files
 data/
 backups/
+training/
 
 # Notebook checkpoints
 .ipynb_checkpoints/
