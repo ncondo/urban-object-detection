@@ -17,6 +17,22 @@ def split(data_dir):
         - data_dir [str]: data directory, /mnt/data
     """
     # TODO: Implement function
+    os.makedirs(data_dir+"/train", exist_ok=True)
+    os.makedirs(data_dir+"/val", exist_ok=True)
+    os.makedirs(data_dir+"/test", exist_ok=True)
+
+    fnames = os.listdir(data_dir+"/processed/")
+    random.shuffle(fnames)
+
+    for i, fname in enumerate(fnames):
+        if i < 70:
+            folder = 'train'
+        elif i < 85:
+            folder = 'val'
+        else:
+            folder = 'test'
+
+        os.rename(data_dir+"/processed/"+fname, data_dir+"/"+folder+"/"+fname)
     
 
 if __name__ == "__main__": 
